@@ -1,6 +1,6 @@
 # datapot-fabric-agent-demo
 
-### Power BI reports, built by an AI agent — as reviewable code, not clicks.
+### Power BI analytics-cycle demo, built with AI agents — as reviewable code, not clicks.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Status](https://img.shields.io/badge/status-research%20%26%20educational-orange)
@@ -9,10 +9,11 @@
 ![Microsoft Fabric](https://img.shields.io/badge/Microsoft-Fabric-0078D4)
 ![Data: 100% synthetic](https://img.shields.io/badge/data-100%25%20synthetic-brightgreen)
 
-A Microsoft Fabric / Power BI monorepo where every semantic model and report is authored by
-**Claude Code** in diff-able **PBIP** format (TMDL + PBIR) — then validated, documented, and
-version-controlled like software. **Report 01** is a banking **Branch &amp; Channel Performance**
-dashboard built end-to-end on a 100% AI-generated dataset.
+A Microsoft Fabric / Power BI monorepo where semantic models and reports are authored with
+**AI agents** (Claude Code and GitHub Copilot) in diff-able **PBIP** format (TMDL + PBIR) —
+then validated, documented, and version-controlled like software. **Report 01** is the first
+demonstration scenario; the core goal is to show reusable agentic patterns across the full
+analytics cycle.
 
 📖 **See exactly how it was built** — prompts, debug log, and cost: **[read the build recap](https://datapotanalytics.github.io/datapot-fabric-agent-demo/session-recap.html)** *(rendered via GitHub Pages; source in [`docs/session-recap.html`](docs/session-recap.html)).*
 
@@ -35,6 +36,43 @@ The report has three pages — **Overview**, **Channel Performance**, and **Bran
 (31 visuals). Open `BranchChannelPerformance.pbip` to explore them ([Getting Started ↓](#getting-started--open--explore-report-01)),
 or skim the [build recap](docs/session-recap.html) for the visuals and story.
 
+## Project intent: demo AI-agent capability across the analytics cycle
+
+This repo is designed as a **reference demo** for each analytics stage, not as a deeply
+specialized banking implementation:
+
+1. Discovery & scoping
+2. Data contract & profiling
+3. Semantic modeling (TMDL)
+4. Report authoring (PBIR)
+5. Validation & review
+6. Publish / operate in Fabric
+
+You can reuse the same approach for other domains by creating new report folders under `reports/`.
+
+## How report development workflows work in this repo
+
+Every report follows the same lifecycle under `reports/NN-name/`:
+
+1. Scope the business goals in `docs/report-spec.md`.
+2. Define required input files/columns in `dataset/DATASET-CONTRACT.md`.
+3. Add data to `dataset/raw/`, then profile it (`docs/data-profile.md`).
+4. Build/adjust the semantic model in TMDL (`pbip/<Project>.SemanticModel`).
+5. Build pages/visuals in PBIR (`pbip/<Project>.Report`).
+6. Keep dictionary and build log updated (`dictionary/`, `docs/build-log.md`).
+7. Run validation gates before commit (`tmdl-validate`, `validate_pbip.py`, `jq empty`).
+
+For full details, see [docs/report-lifecycle.md](docs/report-lifecycle.md) and [CONVENTIONS.md](CONVENTIONS.md).
+
+### Workflow examples
+
+- **Existing example:** `reports/01-branch-channel-performance/` shows a complete end-to-end implementation (dataset contract → model design → report spec → TMDL/PBIR artifacts).
+- **New report example:** create `reports/02-customer-retention/` using the same contract, then deliver:
+  1. KPI scope (`Retention Rate`, `Churn Rate`, `Active Customers`),
+  2. a star schema (Date/Customer/Segment/Region + facts),
+  3. three pages (`Overview`, `Drivers`, `Scorecard`),
+  4. validation and registry update in `reports/README.md`.
+
 ## What you'll learn
 
 A worked, end-to-end example of **agentic analytics engineering** on the Microsoft data platform:
@@ -43,8 +81,39 @@ A worked, end-to-end example of **agentic analytics engineering** on the Microso
 - ⭐ **Star-schema modeling** — 6 dimensions, 3 facts, hidden surrogate keys, explicit measures only.
 - 🧮 **DAX measure design** — 22 measures in display folders (volume · revenue &amp; targets · service/NPS · digital adoption · time intelligence).
 - 📒 **Spec-driven, documented builds** — dataset contract → data profile → model design → report spec → build log → data dictionary.
-- 🤖 **The agent workflow** — the actual prompts, debug log, and cost ([recap](docs/session-recap.html)).
+- 🤖 **Agent-fleet workflow** — how to route tasks to the right specialist skills in Claude Code and GitHub Copilot.
 - 🧰 **Reusable conventions** — folder, naming, TMDL &amp; PBIR rules that keep a multi-report repo consistent ([CONVENTIONS.md](CONVENTIONS.md)).
+
+## Agent fleet (recommended routing)
+
+| Need | Best fit |
+|---|---|
+| Cross-workload Fabric implementation (lakehouse/warehouse/pipeline/notebook) | `FabricDataEngineer` |
+| Power BI business Q&amp;A from reports/models | `FabricIQ` |
+| Fabric governance/ops/security/capacity tasks | `FabricAdmin` |
+| App integration with Fabric APIs/data | `FabricAppDev` |
+| Local PBIP/TMDL/PBIR build and validation | `power-bi-agentic-development` skills |
+
+## Quick start for non-technical, business-focused analysts
+
+Start here for plain-language, low-code workflows in both tools:
+
+- [Business analyst quickstart (Claude Code + GitHub Copilot)](docs/business-analyst-quickstart.md)
+- Claude walkthrough video: [How to use Claude Code (YouTube)](https://www.youtube.com/watch?v=lEqekp9MFcA)
+
+## Keep skills-for-fabric current
+
+For GitHub Copilot CLI plugin users:
+
+```text
+/plugin update fabric-skills@fabric-collection
+```
+
+If you still use the legacy id, this alias also works:
+
+```text
+/plugin update skills-for-fabric@fabric-collection
+```
 
 ## Getting Started — open &amp; explore Report 01
 
@@ -91,6 +160,7 @@ datapot-fabric-agent-demo/
 ├── CONTRIBUTING.md · SECURITY.md · CODE_OF_CONDUCT.md · CHANGELOG.md · LICENSE
 ├── docs/                      ← repo-wide docs
 │   ├── report-lifecycle.md    ← design → dataset → model → report → deploy
+│   ├── business-analyst-quickstart.md ← non-technical starter guide for Claude/Copilot
 │   ├── business-glossary.md   ← banking terms shared across reports
 │   ├── fabric-environment.md  ← target workspaces / deployment (fill in per tenant)
 │   ├── assets/                ← diagrams (star-schema.svg)

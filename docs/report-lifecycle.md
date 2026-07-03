@@ -1,8 +1,9 @@
 # Report development lifecycle
 
-The standard path for every report in this repo. It mirrors the Skills-for-Fabric pattern
-(*discover → build data → Gold → Direct Lake model → report → verify*) adapted for a
-local-first PBIP workflow where source data is pasted into the report folder.
+The standard path for every report in this repo. This is intentionally an **analytics-cycle demo**
+workflow (reusable across domains), not a deep single-use-case playbook. It mirrors the
+Fabric Skills pattern (*discover → build data → Gold → Direct Lake model → report → verify*)
+adapted for a local-first PBIP workflow where source data is pasted into the report folder.
 
 ```
  1. Scope ──► 2. Dataset contract ──► 3. Paste data ──► 4. Profile ──► 5. Model
@@ -12,7 +13,7 @@ local-first PBIP workflow where source data is pasted into the report folder.
 
 ## 1. Scope the report
 Capture audience, decisions to support, KPIs, and the grain of analysis in `docs/report-spec.md`.
-Decide the banking sub-domain and the dimensions/facts needed.
+Decide the business domain and the dimensions/facts needed.
 
 ## 2. Write the dataset contract
 In `dataset/DATASET-CONTRACT.md`, list every file the report needs and its columns

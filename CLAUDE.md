@@ -10,7 +10,7 @@ This is a **multi-report Power BI / Microsoft Fabric monorepo**. Read this befor
 
 ## Tooling available (installed plugins)
 
-- **skills-for-fabric** (`@fabric-collection`) — Fabric data-plane work: workspaces, lakehouses,
+- **fabric-skills** (`@fabric-collection`) — Fabric data-plane work: workspaces, lakehouses,
   warehouses, notebooks, pipelines, semantic-model authoring/consumption via REST. Orchestrator
   agents: `FabricDataEngineer`, `FabricIQ`, `FabricAdmin`, `FabricAppDev`. Use for anything that
   touches a Fabric workspace or the medallion (Bronze/Silver/Gold) layers feeding a report.
@@ -20,7 +20,35 @@ This is a **multi-report Power BI / Microsoft Fabric monorepo**. Read this befor
   - `reports` skills — `create-pbi-report`, `pbir-cli`, theme, visuals, report review.
 
 When a task spans Fabric (data engineering) **and** Power BI (modeling/report), follow the
-skills-for-fabric workflow: discover → build data → **Gold lakehouse → Direct Lake semantic model → report**.
+fabric-skills workflow: discover → build data → **Gold lakehouse → Direct Lake semantic model → report**.
+
+### Agent fleet quick routing (for GitHub Copilot and Claude Code)
+
+Use this routing so requests land on the right specialist quickly:
+
+| Request shape | Preferred agent/skill | Why |
+|---|---|---|
+| End-to-end Fabric data engineering work (lakehouse, pipelines, SQL + Spark mix) | `FabricDataEngineer` | Best cross-workload orchestrator |
+| Business question over Power BI report/model | `FabricIQ` | Discovers artifacts, generates/executes DAX, summarizes insight |
+| Workspace/capacity/governance/security operations | `FabricAdmin` | Handles operational and governance concerns |
+| App integration on top of Fabric APIs/data | `FabricAppDev` | Best for API/client integration patterns |
+| PBIP/TMDL/PBIR local authoring | `power-bi-agentic-development` skills | Strongest file-level local authoring/validation flow |
+
+If the ask is broad, split by stage: **data engineering first**, then **semantic model**, then **report design/authoring**.
+
+### Keep Fabric skills up to date
+
+Use the canonical plugin id:
+
+```text
+/plugin update fabric-skills@fabric-collection
+```
+
+Legacy id still works as an alias if needed:
+
+```text
+/plugin update skills-for-fabric@fabric-collection
+```
 
 ## Golden rules
 
