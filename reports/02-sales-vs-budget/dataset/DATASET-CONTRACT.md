@@ -1,61 +1,93 @@
-# Dataset contract — Branch & Channel Performance
+# Dataset contract — Sales vs Budget (VANNAVARSDEL)
 
-What `dataset/raw/` must contain. This is the agreement between the data producer and the semantic
-model. The model's Power Query partitions read these files relative to the `DataFolder` parameter.
-The dataset is the **BankDIAD** sample (monthly partitions, 2023-01 → 2025-12).
+This file defines what `dataset/raw/` must contain for report 02. It is the contract between the
+data producer and the semantic model. All Power Query partitions read files relative to the
+`DataFolder` parameter.
 
-> ✅ Status: data is present and the model is bound to it. See [docs/data-profile.md](../docs/data-profile.md).
+Dataset name: **VANNAVARSDEL**
 
-## Files consumed by THIS report (#1)
+> Status: baseline data is present in `dataset/raw/`. Keep this contract updated whenever schema changes.
 
-### `Transactions/transactions_YYYY-MM.csv`  → fact `Transactions`
+## Scope
+
+Primary business use case for this report:
+- Compare actual sales/performance against monthly budget targets.
+- Analyze gaps by branch, product, customer segment, and channel.
+
+## Required files consumed by this report
+
+### `Transactions/transactions_YYYY-MM.csv` -> fact `Transactions` (actuals)
+
+Naming rule:
+- One file per month, `YYYY-MM` format.
+
+Minimum required columns:
+
 | Column | Type | Notes |
 |--------|------|-------|
-| TransactionID | text | unique |
 | Date | date | transaction date |
-| CustomerID | text | → DimCustomer |
-| ProductID | text | → DimProduct |
-| BranchID | text | → DimBranch (B001–B050) |
-| ChannelID | text | CH1–CH6 |
-| ChannelName | text | ATM, Internet/Mobile/Phone Banking, Quầy giao dịch, Đại lý |
-| TransactionTypeID | text | T01–T08 |
-| TransactionTypeName | text | Vietnamese type name |
-| Direction | text | Credit / Debit |
-| Amount_VND | integer | **signed** (debit negative) |
-| Fee_VND | integer | ≥ 0 |
-| ServiceTimeMinutes | decimal | may be blank |
+| BranchID | text | joins to `Branch` |
+| ProductID | integer | joins to `Product` |
+| CustomerID | integer | joins to `Customer` |
+| ChannelID | text | joins to `Channel` (derived if needed) |
+| TransactionTypeID | text | joins to `Transaction Type` (derived if needed) |
+| Amount_VND | integer | signed amount |
+| Fee_VND | integer | non-negative |
 
-### `NPSSurveys/nps_YYYY-MM.csv`  → fact `NPS Surveys`
-`SurveyID, SurveyDate (date), CustomerID, BranchID, Score (0–10 int), NPSCategory
-(Promoter/Passive/Detractor), PrimaryReasonID (R01–R08), PrimaryReason`. No channel column.
+Optional columns (if available):
+`TransactionID`, `ChannelName`, `TransactionTypeName`, `Direction`, `ServiceTimeMinutes`.
 
-### `Targets/BranchTargets.xlsx`, sheet `MonthlyTargets`  → fact `Branch Targets`
-Wide format: `BranchID, BranchName, TargetType` + one column per month `2023-01 … 2025-12`.
-`TargetType ∈ {Total Revenue (VND), CASA Balance (VND)}`. The model **unpivots** the month columns.
+### `Targets/BranchTargets.xlsx` (sheet `MonthlyTargets`) -> fact `Branch Targets` (budget)
 
-### `Dimensions/BankDIAD_Dimensions.xlsx`  → dimensions
+Required shape:
+- Grain: Branch + TargetType + Month.
+- Source can be wide format, but model will unpivot month columns.
+
+Required columns before unpivot:
+
+| Column | Type | Notes |
+|--------|------|-------|
+| BranchID | text | joins to `Branch` |
+| BranchName | text | descriptive |
+| TargetType | text | example: `Total Revenue (VND)` |
+| `YYYY-MM` month columns | number | monthly budget values |
+
+### `Dimensions/BankDIAD_Dimensions.xlsx` -> dimensions
+
+Required sheets and keys:
+
 | Sheet | Model table | Key columns |
 |-------|-------------|-------------|
-| DimBranch | `Branch` | BranchID, BranchName, City, District, Region, BranchType, OpenDate, Manager |
-| DimProduct | `Product` | ProductID, ProductName, ProductCategory, ProductSubCategory, BaseRate |
-| DimCustomer | `Customer` | CustomerID, FullName, Gender, DateOfBirth, Age, Occupation, City, HomeBranchID, Segment, JoinDate, KYCStatus |
-| DimDate | `Date` | Date, Year, Quarter, Month, MonthName, MonthYear, DayOfWeek, IsWeekend |
+| DimBranch | `Branch` | BranchID, BranchName, Region, BranchType |
+| DimProduct | `Product` | ProductID, ProductName, ProductCategory |
+| DimCustomer | `Customer` | CustomerID, Segment, HomeBranchID |
+| DimDate | `Date` | Date, Year, Month, MonthYear |
 
-`Channel` and `Transaction Type` dimensions are **derived** from distinct values in `Transactions`
-(no sheet exists for them).
+Derived dimensions:
+- `Channel` and `Transaction Type` may be derived from distinct values in `Transactions`.
 
-## Files NOT used by this report (reserved for future reports)
+## Secondary file currently consumed by model
 
-| File | Reserved for |
-|------|--------------|
-| `Dimensions/Accounts.csv` | account dimension (future) |
-| `AccountSnapshots/snapshot_YYYY-MM.csv` | **Report #2 — Deposits & Balances** (Balance_VND, NPLGroup) |
-| `CustomerProductMonth/cpm_YYYY-MM.csv` | **Report #2/#3** — product holdings / customer 360 |
-| `LoanOriginations/origination_YYYY-MM.csv` | **Report #3 — Lending / Credit Risk** (DisbursedAmount, TermMonths, InterestRate, Status) |
+### `NPSSurveys/nps_YYYY-MM.csv` -> fact `NPS Surveys`
 
-## Refresh rules
-- Add new monthly files into the matching folder using the same name pattern; the folder-combine
-  queries pick them up automatically — no model change needed.
-- Keep column names and order stable. If they change, update the matching `*.tmdl` partition and the
-  [data dictionary](../dictionary/data-dictionary.md).
-- Encoding must be **UTF-8** (Vietnamese text); the queries read with `Encoding = 65001`.
+This file is used by the current semantic model but is secondary for Sales vs Budget analysis.
+Required columns:
+`SurveyID`, `SurveyDate`, `CustomerID`, `BranchID`, `Score`, `NPSCategory`, `PrimaryReasonID`, `PrimaryReason`.
+
+## Files present but out of current report scope
+
+| File | Purpose |
+|------|---------|
+| `Dimensions/Accounts.csv` | future account-level analysis |
+| `AccountSnapshots/snapshot_YYYY-MM.csv` | future balance trend analysis |
+| `CustomerProductMonth/cpm_YYYY-MM.csv` | future customer product-holding analysis |
+| `LoanOriginations/origination_YYYY-MM.csv` | future lending/origination analysis |
+
+## Data quality and refresh rules
+
+- Encoding: UTF-8.
+- Monthly partition files must follow the exact naming pattern.
+- Column names are case-sensitive for ingestion scripts; do not rename without model update.
+- Keys must be non-null where used for joins (`BranchID`, `ProductID`, `CustomerID`, `Date`).
+- Budget values should be non-negative unless explicitly defined otherwise.
+- On schema change: update this contract, `dictionary/data-dictionary.md`, and relevant `*.tmdl` partitions together.
