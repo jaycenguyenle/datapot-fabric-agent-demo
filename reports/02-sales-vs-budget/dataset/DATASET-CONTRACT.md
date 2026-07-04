@@ -1,12 +1,12 @@
-# Dataset contract — Branch & Channel Performance
+# Dataset contract — Sales vs Budget
 
 What `dataset/raw/` must contain. This is the agreement between the data producer and the semantic
 model. The model's Power Query partitions read these files relative to the `DataFolder` parameter.
 The dataset is the **BankDIAD** sample (monthly partitions, 2023-01 → 2025-12).
 
-> ✅ Status: data is present and the model is bound to it. See [docs/data-profile.md](../docs/data-profile.md).
+> ⚠️ Status: this file has **not** been updated yet for report #2 (Sales vs Budget). The sections below are still carried over from report #1 and should be replaced before this report is built.
 
-## Files consumed by THIS report (#1)
+## Files currently documented (carried over from report #1)
 
 ### `Transactions/transactions_YYYY-MM.csv`  → fact `Transactions`
 | Column | Type | Notes |
