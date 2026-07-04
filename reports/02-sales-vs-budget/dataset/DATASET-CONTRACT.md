@@ -16,7 +16,7 @@ The dataset is the **VANARSDEL** sample (historical actuals and budget forecasts
 | Date | date | transaction date → Date |
 | CustomerID | integer | → DimCustomer |
 | CampaignID | text | → DimCampaign |
-| Units | integer | Number of products sold |
+| Units | integer | Quantity sold (signed, negative for returns) |
 
 ### `Campaign/VanArsdel_Actuals_Campaign.csv`  → fact `Campaign`
 CampaignID (int), TrafficChannel (text: Organic Search, SEO, Banner, SEM, Email, SMO, Mail), Device (text: Desktop, Mobile, Tablet, Paper).
