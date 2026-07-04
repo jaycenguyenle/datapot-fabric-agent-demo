@@ -36,15 +36,6 @@ Wide format: `Type, Year, Month` + one column per Product Category-Segment combi
 `Manufacturer` and `Segment` dimensions are **derived** from distinct values in `Product`
 (no sheet exists for them).
 
-## Files NOT used by this report (reserved for future reports)
-
-| File | Reserved for |
-|------|--------------|
-| `Dimensions/Inventory.csv` | inventory dimension (future) |
-| `StoreSnapshots/snapshot_YYYY-MM.csv` | **Report #2 — Store & Retail Performance** (TrafficCount, OperationalCost) |
-| `CustomerLoyalty/loyalty_YYYY-MM.csv` | **Report #2/#3** — customer retention / loyalty tier 360 |
-| `MarketingSpend/spend_YYYY-MM.csv` | **Report #3 — Marketing ROI & Attribution** (AdWordsSpend, SocialMediaSpend, Status) |
-
 ## Refresh rules
 - Add new monthly files into the matching folder using the same name pattern; the folder-combine
   queries pick them up automatically — no model change needed.
