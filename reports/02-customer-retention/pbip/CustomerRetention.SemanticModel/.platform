@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Customer Retention Scorecard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "04f4f0f2-0500-4fe4-8e51-6cf8f2a1b94f"
+  }
+}

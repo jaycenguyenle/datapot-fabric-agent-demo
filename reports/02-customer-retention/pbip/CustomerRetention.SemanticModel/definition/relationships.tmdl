@@ -1,0 +1,15 @@
+relationship CustomerStatus_Date
+fromColumn: 'Customer Status'.Date
+toColumn: Date.Date
+
+relationship CustomerStatus_Customer
+fromColumn: 'Customer Status'.'Customer ID'
+toColumn: Customer.'Customer ID'
+
+relationship Customer_Segment
+fromColumn: Customer.'Segment ID'
+toColumn: Segment.'Segment ID'
+
+relationship Customer_Region
+fromColumn: Customer.'Region ID'
+toColumn: Region.'Region ID'

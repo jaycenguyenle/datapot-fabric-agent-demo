@@ -1,0 +1,27 @@
+section,table_or_measure,model_name,source_column,type,key,hidden,format,dax,description,example
+column,Date,Date,Date,dateTime,PK,no,,,Calendar date,2025-01-01
+column,Date,Year,Year,int64,-,no,,,Calendar year,2025
+column,Date,Month Number,MonthNumber,int64,-,yes,,,Month number for sorting,1
+column,Date,Month Name,MonthName,string,-,no,,,Month label,January
+column,Date,Month Year,MonthYear,string,-,no,,,Month-year label,Jan 2025
+column,Segment,Segment ID,segment_id,string,PK,yes,,,Segment key,S1
+column,Segment,Segment Name,segment_name,string,-,no,,,Segment label,Mass Retail
+column,Region,Region ID,region_id,string,PK,yes,,,Region key,R1
+column,Region,Region Name,region_name,string,-,no,,,Region label,North
+column,Customer,Customer ID,customer_id,string,PK,yes,,,Customer key,C001
+column,Customer,Join Date,join_date,dateTime,-,no,,,Onboarding date,2024-01-15
+column,Customer,Segment ID,segment_id,string,FK,yes,,,Segment foreign key,S1
+column,Customer,Region ID,region_id,string,FK,yes,,,Region foreign key,R1
+column,Customer,City,city,string,-,no,,,Customer city,Hanoi
+column,Customer Status,Date,month,dateTime,FK,yes,,,Month start date,2025-01-01
+column,Customer Status,Customer ID,customer_id,string,FK,yes,,,Customer key,C001
+column,Customer Status,Is Active,is_active,boolean,-,yes,,,Active status,true
+column,Customer Status,Is Churned,is_churned,boolean,-,yes,,,Churn status,false
+column,Customer Status,Tenure Months,tenure_months,int64,-,yes,,,Tenure in months,12
+column,Customer Status,Monthly Revenue,monthly_revenue,double,-,yes,,,Monthly revenue,430000
+measure,Key Measures,Active Customers,,,,-,no,"#,##0","CALCULATE(DISTINCTCOUNT('Customer Status'[Customer ID]), 'Customer Status'[Is Active] = TRUE())",Count of active customers,
+measure,Key Measures,Churned Customers,,,,-,no,"#,##0","CALCULATE(DISTINCTCOUNT('Customer Status'[Customer ID]), 'Customer Status'[Is Churned] = TRUE())",Count of churned customers,
+measure,Key Measures,Churn Rate %,,,,-,no,0.0%,"DIVIDE([Churned Customers], [Active Customers])",Churn ratio,
+measure,Key Measures,Retention Rate %,,,,-,no,0.0%,"1 - [Churn Rate %]",Retention ratio,
+measure,Key Measures,Monthly Revenue,,,,-,no,"#,##0","SUM('Customer Status'[Monthly Revenue])",Revenue in period,
+measure,Key Measures,ARPU,,,,-,no,"#,##0","DIVIDE([Monthly Revenue], [Active Customers])",Average revenue per active customer,

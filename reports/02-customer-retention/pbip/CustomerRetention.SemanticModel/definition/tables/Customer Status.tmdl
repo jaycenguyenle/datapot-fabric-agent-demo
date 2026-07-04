@@ -1,0 +1,73 @@
+table 'Customer Status'
+lineageTag: eaf4a87f-46b2-4429-865b-4fd5418f44da
+
+column Date
+dataType: dateTime
+isHidden
+formatString: dd mmm yyyy
+lineageTag: 76ebd839-c6ea-4889-b569-0ed8c57f5a09
+summarizeBy: none
+sourceColumn: month
+
+annotation SummarizationSetBy = Automatic
+
+annotation UnderlyingDateTimeDataType = Date
+
+column 'Customer ID'
+dataType: string
+isHidden
+lineageTag: d0581884-b2ae-4d15-8617-41954d11f4db
+summarizeBy: none
+sourceColumn: customer_id
+
+annotation SummarizationSetBy = Automatic
+
+column 'Is Active'
+dataType: boolean
+isHidden
+lineageTag: a9f2d8be-f7ef-4679-b5f5-89d82942b7e9
+summarizeBy: none
+sourceColumn: is_active
+
+annotation SummarizationSetBy = Automatic
+
+column 'Is Churned'
+dataType: boolean
+isHidden
+lineageTag: 030cb4fd-aa6f-4d89-bcd9-29243f369f97
+summarizeBy: none
+sourceColumn: is_churned
+
+annotation SummarizationSetBy = Automatic
+
+column 'Tenure Months'
+dataType: int64
+isHidden
+lineageTag: eec40372-0898-490f-85ad-6f9254408d8d
+summarizeBy: none
+sourceColumn: tenure_months
+
+annotation SummarizationSetBy = Automatic
+
+column 'Monthly Revenue'
+dataType: double
+isHidden
+formatString: #,##0
+lineageTag: 5d32f7f3-6dbd-47ca-b415-d1118d923278
+summarizeBy: sum
+sourceColumn: monthly_revenue
+
+annotation SummarizationSetBy = Automatic
+
+partition 'Customer Status' = m
+mode: import
+source =
+let
+    Source = Csv.Document(File.Contents(DataFolder & "\\customer_monthly_status.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ToBoolean = Table.TransformColumns(Promoted, {{"is_active", each if _ = "1" then true else false, type logical}, {"is_churned", each if _ = "1" then true else false, type logical}}),
+    Typed = Table.TransformColumnTypes(ToBoolean, {{"month", type date}, {"customer_id", type text}, {"tenure_months", Int64.Type}, {"monthly_revenue", type number}})
+in
+    Typed
+
+annotation PBI_ResultType = Table

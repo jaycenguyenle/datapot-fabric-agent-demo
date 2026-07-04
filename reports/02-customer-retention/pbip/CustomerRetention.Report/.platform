@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Customer Retention Scorecard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "50557d44-6f65-4c80-aec8-8f427b4196fe"
+  }
+}

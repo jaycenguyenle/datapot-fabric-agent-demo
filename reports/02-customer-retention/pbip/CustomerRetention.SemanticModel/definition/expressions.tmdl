@@ -1,0 +1,4 @@
+expression DataFolder = "C:\path\to\datapot-fabric-agent-demo\reports\02-customer-retention\dataset\raw" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+lineageTag: b8d78d35-2830-4d65-9ae6-9e21de8dd5af
+
+annotation PBI_ResultType = Text

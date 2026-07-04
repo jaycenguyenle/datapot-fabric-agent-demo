@@ -1,0 +1,59 @@
+table Customer
+lineageTag: 20f7e7dd-2053-43aa-aea7-aecc49be6c44
+
+column 'Customer ID'
+dataType: string
+isHidden
+isKey
+lineageTag: 5d50ecb8-b95b-4d0f-88b6-57d937f5336f
+summarizeBy: none
+sourceColumn: customer_id
+
+annotation SummarizationSetBy = Automatic
+
+column 'Join Date'
+dataType: dateTime
+formatString: dd mmm yyyy
+lineageTag: d1e84ff6-a7a3-4eec-ba5c-4f3a171dc4d7
+summarizeBy: none
+sourceColumn: join_date
+
+annotation SummarizationSetBy = Automatic
+
+annotation UnderlyingDateTimeDataType = Date
+
+column 'Segment ID'
+dataType: string
+isHidden
+lineageTag: d80df4a8-5087-41ef-89cd-7c60ef8f5604
+summarizeBy: none
+sourceColumn: segment_id
+
+annotation SummarizationSetBy = Automatic
+
+column 'Region ID'
+dataType: string
+isHidden
+lineageTag: 90d67693-f00a-4f9c-a44e-1ce790f3a170
+summarizeBy: none
+sourceColumn: region_id
+
+annotation SummarizationSetBy = Automatic
+
+column City
+dataType: string
+lineageTag: 863ac8f2-6572-411e-a528-fbc0f28cf1ca
+summarizeBy: none
+sourceColumn: city
+
+annotation SummarizationSetBy = Automatic
+
+partition Customer = m
+mode: import
+source =
+let
+    Source = Csv.Document(File.Contents(DataFolder & "\\customer_dim.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    Typed = Table.TransformColumnTypes(Promoted, {{"customer_id", type text}, {"join_date", type date}, {"segment_id", type text}, {"region_id", type text}, {"city", type text}})
+in
+    Typed

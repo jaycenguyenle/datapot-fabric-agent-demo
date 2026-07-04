@@ -1,0 +1,21 @@
+model CustomerRetention
+culture: en-US
+defaultPowerBIDataSourceVersion: powerBI_V3
+discourageImplicitMeasures
+sourceQueryCulture: en-US
+dataAccessOptions
+legacyRedirects
+returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["DataFolder","Date","Segment","Region","Customer","Customer Status"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Date
+ref table Segment
+ref table Region
+ref table Customer
+ref table 'Customer Status'
+ref table 'Key Measures'

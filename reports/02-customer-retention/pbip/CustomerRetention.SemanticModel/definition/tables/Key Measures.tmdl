@@ -1,0 +1,45 @@
+table 'Key Measures'
+lineageTag: f5acb767-fa7d-48e7-8e9b-a2deba327542
+
+measure 'Active Customers' = CALCULATE ( DISTINCTCOUNT ( 'Customer Status'[Customer ID] ), 'Customer Status'[Is Active] = TRUE () )
+formatString: #,##0
+displayFolder: 01 Retention
+lineageTag: ca4d0365-f1c0-45dc-8a4f-8f805f4aa540
+
+measure 'Churned Customers' = CALCULATE ( DISTINCTCOUNT ( 'Customer Status'[Customer ID] ), 'Customer Status'[Is Churned] = TRUE () )
+formatString: #,##0
+displayFolder: 01 Retention
+lineageTag: 7a3b72f5-9eab-4bd3-b709-c4ba2742c213
+
+measure 'Churn Rate %' = DIVIDE ( [Churned Customers], [Active Customers] )
+formatString: 0.0%
+displayFolder: 01 Retention
+lineageTag: c2ef460e-d825-4fd9-9870-2f63f4a5f672
+
+measure 'Retention Rate %' = 1 - [Churn Rate %]
+formatString: 0.0%
+displayFolder: 01 Retention
+lineageTag: 1754d184-0409-4d65-855f-f9132bb423ce
+
+measure 'Monthly Revenue' = SUM ( 'Customer Status'[Monthly Revenue] )
+formatString: #,##0
+displayFolder: 02 Revenue
+lineageTag: c8a3684e-aa4c-429c-b281-7721b85f4640
+
+measure ARPU = DIVIDE ( [Monthly Revenue], [Active Customers] )
+formatString: #,##0
+displayFolder: 02 Revenue
+lineageTag: d99f4608-a9cf-4c09-ac0a-73bea5fcd9fa
+
+column Value
+isHidden
+lineageTag: 67f50e76-e57d-4ee4-af9a-c8640414db88
+summarizeBy: none
+isNameInferred
+sourceColumn: [Value]
+
+annotation SummarizationSetBy = Automatic
+
+partition 'Key Measures' = calculated
+mode: import
+source = {BLANK()}

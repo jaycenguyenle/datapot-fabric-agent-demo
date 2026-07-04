@@ -1,0 +1,11 @@
+customer_id,join_date,segment_id,region_id,city
+C001,2024-01-15,S1,R1,Hanoi
+C002,2024-02-03,S2,R1,Hanoi
+C003,2024-02-18,S3,R2,Da Nang
+C004,2024-03-05,S1,R2,Da Nang
+C005,2024-03-22,S2,R3,Can Tho
+C006,2024-04-10,S1,R3,Can Tho
+C007,2024-04-21,S3,R1,Hanoi
+C008,2024-05-06,S2,R2,Da Nang
+C009,2024-05-19,S1,R3,Can Tho
+C010,2024-06-02,S3,R1,Hanoi

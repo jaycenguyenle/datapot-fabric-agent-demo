@@ -5,6 +5,7 @@ Every report in this repo, newest decisions on top. One folder per report under 
 | # | Report | Domain | Status | Model | Owner | Notes |
 |---|--------|--------|--------|-------|-------|-------|
 | 01 | [Branch & Channel Performance](01-branch-channel-performance/README.md) | Banking — branch & channel ops | 🟢 Built | Import (TMDL) over BankDIAD CSVs/XLSX | — | All 3 pages built (Overview, Channel Performance, Branch Scorecard); opens in Desktop |
+| 02 | [Customer Retention Scorecard](02-customer-retention/README.md) | Banking — customer retention | 🟡 In progress | Import (TMDL) over synthetic CSVs | — | Initial model + PBIR shell scaffolded; visuals pending |
 
 Legend: 🔴 scoping · 🟡 in progress · 🟢 published.
 

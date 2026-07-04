@@ -1,0 +1,63 @@
+table Date
+lineageTag: 0840e182-69e1-4ff9-9084-e71a74e2c0d3
+dataCategory: Time
+
+column Date
+dataType: dateTime
+isKey
+formatString: dd mmm yyyy
+lineageTag: d8d5fdb1-53e6-4f5b-9942-3c85505682e3
+summarizeBy: none
+sourceColumn: Date
+
+annotation SummarizationSetBy = Automatic
+
+annotation UnderlyingDateTimeDataType = Date
+
+column Year
+dataType: int64
+lineageTag: 82e3199f-2ce3-4174-8a89-e4de5f3ea9e5
+summarizeBy: none
+sourceColumn: Year
+
+annotation SummarizationSetBy = Automatic
+
+column 'Month Number'
+dataType: int64
+isHidden
+lineageTag: 739e0f52-7c81-49db-b095-06f0d5795ca3
+summarizeBy: none
+sourceColumn: MonthNumber
+
+annotation SummarizationSetBy = Automatic
+
+column 'Month Name'
+dataType: string
+lineageTag: c49af0d8-7e3a-4f77-b494-6ef83c764a43
+summarizeBy: none
+sourceColumn: MonthName
+sortByColumn: 'Month Number'
+
+annotation SummarizationSetBy = Automatic
+
+column 'Month Year'
+dataType: string
+lineageTag: 8c417b7f-8a4b-44bc-9dd2-0549fdf2d9e7
+summarizeBy: none
+sourceColumn: MonthYear
+
+annotation SummarizationSetBy = Automatic
+
+partition Date = calculated
+mode: import
+source =
+VAR StartDate = DATE(2025, 1, 1)
+VAR EndDate = DATE(2025, 6, 30)
+RETURN
+ADDCOLUMNS(
+CALENDAR(StartDate, EndDate),
+"Year", YEAR([Date]),
+"MonthNumber", MONTH([Date]),
+"MonthName", FORMAT([Date], "MMMM"),
+"MonthYear", FORMAT([Date], "MMM yyyy")
+)
