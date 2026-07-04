@@ -41,7 +41,7 @@ profiled BankDIAD data — see [data-profile.md](data-profile.md).
 | Customer[ZipCode] | Geo[Zip] |
 | Budget & Forecast[MonthKey] | Date[Date] |
 
-## Bảng Budget & Forecast không có mối quan hệ vật lý nào với các bảng 'Geo', 'Customer', và 'Campaign'. Filtering actions with Budget data will be comptleted through DAX Measures.
+## There's any relationship between `Budget & Forecast table` with 'Geo', 'Customer', và 'Campaign'. Filtering actions with Budget data will be comptleted through DAX Measures.
 
 ## Design decisions
 
