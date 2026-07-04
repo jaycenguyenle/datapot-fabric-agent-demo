@@ -1,108 +1,111 @@
-# Data dictionary — VANARSDEL Sales vs Budget
+# Data dictionary — Sales vs Budget (VANARSDEL)
 
-This dictionary documents the VANARSDEL source dataset used by report 02.
-Currency-related numeric values are in USD unless downstream model logic defines otherwise.
+Lock-step with the semantic model in `../pbip/BranchChannelPerformance.SemanticModel`.
+Currency = **USD**.
+Hidden columns are not shown to report users (keys, raw fact fields). `★` = table key.
 
-## Source files in scope
+## Dimensions
 
-| Source file | Logical entity | Format |
-|---|---|---|
-| `dataset/raw/Sales/VanArsdel_Actuals.xlsx` (sheet `Sales`) | Sales actuals | Excel |
-| `dataset/raw/Campaign/VanArsdel_Actuals_Campaign.csv` | Campaign dimension/lookup | CSV |
-| `dataset/raw/Budget/VanArsdel_Budget_Forecast.xlsx` (sheet `Sheet1`) | Budget and forecast | Excel |
-| `dataset/raw/Dimensions/VanArsdel_Dimensions.xlsx` | Shared dimensions | Excel |
+### `Date`  (DimDate sheet)
+| Model column | Source | Type | Hidden | Description |
+|---|---|---|---|---|
+| Date ★ | Date | dateTime | no | Calendar date (converted from Excel serial) |
+| Year | Year | int64 | no | Calendar year |
+| Quarter | Quarter | string | no | Q1-Q4 |
+| Month No | MonthNo | int64 | yes | Month number sort key |
+| Month Name | MonthName | string | no | Jan-Dec |
+| Month ID | MonthID | int64 | yes | YYYYMM key |
+| Month | Month | string | no | Month label (for example Jan-21) |
 
-## Fact-like entities
+### `Product`  (DimProduct sheet)
+| Model column | Source | Type | Hidden | Description |
+|---|---|---|---|---|
+| Product ID ★ | ProductID | int64 | yes | Product key |
+| Product Name | Product | string | no | Product display name |
+| Category | Category | string | no | Product category |
+| Segment | Segment | string | no | Product segment |
+| Manufacturer ID | ManufacturerID | int64 | yes | Manufacturer key |
+| Manufacturer | Manufacturer | string | no | Manufacturer name |
+| Unit Cost | Unit Cost | double | yes | Cost per unit |
+| Unit Price | Unit Price | double | yes | Selling price per unit |
 
-### Sales (from `VanArsdel_Actuals.xlsx` -> sheet `Sales`)
+### `Customer`  (DimCustomer sheet)
+| Model column | Source | Type | Hidden | Description |
+|---|---|---|---|---|
+| Customer ID ★ | CustomerID | string | yes | Customer key |
+| Zip Code | ZipCode | string | no | ZIP/postal code |
+| Email Name | Email Name | string | no | Customer email/name descriptor |
 
-| Column | Type | Required | Description |
-|---|---|---|---|
-| ProductID | integer | yes | Product key; joins to `DimProduct.ProductID`. |
-| Date | date (Excel serial date) | yes | Transaction date; joins to `DimDate.Date` after conversion. |
-| CustomerID | text/integer id | yes | Customer key; joins to `DimCustomer.CustomerID`. |
-| CampaignID | integer | yes | Campaign key; joins to `Campaign.CampaignID`. |
-| Units | integer | yes | Quantity sold for the transaction row. |
+### `Geo`  (DimGeo sheet)
+| Model column | Source | Type | Hidden | Description |
+|---|---|---|---|---|
+| Zip ★ | Zip | string | yes | ZIP/postal code key |
+| City | City | string | no | City |
+| State | State | string | no | State |
+| Region | Region | string | no | Region |
+| District | District | string | no | District |
+| Country | Country | string | no | Country |
 
-Row grain: one sales transaction line.
+### `Campaign`  (VanArsdel_Actuals_Campaign.csv)
+| Model column | Source | Type | Hidden | Description |
+|---|---|---|---|---|
+| Campaign ID ★ | CampaignID | int64 | yes | Campaign key |
+| Traffic Channel | TrafficChannel | string | no | Organic Search, SEO, Banner, SEM, Email, SMO, Mail |
+| Device | Device | string | no | Desktop, Mobile, Tablet, Paper |
 
-### Budget & Forecast (from `VanArsdel_Budget_Forecast.xlsx` -> sheet `Sheet1`)
+## Facts
 
-| Column | Type | Required | Description |
-|---|---|---|---|
-| Type | text | yes | Planning scenario (`Budget` or `Forecast`). |
-| Year | integer | yes | Calendar year. |
-| Month | text | yes | Month label (for example `Jan`, `Feb`). |
-| `<Category>-<Segment>` columns | decimal | yes | Amount by product category-segment bucket. Examples: `Accessory-Accessory`, `Mix-Productivity`, `Urban-Regular`. |
+### `Sales`  (Sales/VanArsdel_Actuals.xlsx, sheet `Sales`)
+| Model column | Source | Type | Hidden | Description |
+|---|---|---|---|---|
+| Product ID | ProductID | int64 | yes | -> Product |
+| Date | Date | dateTime | yes | -> Date |
+| Customer ID | CustomerID | string | yes | -> Customer |
+| Campaign ID | CampaignID | int64 | yes | -> Campaign |
+| Units | Units | int64 | no | Quantity sold |
 
-Modeling note: this table is typically unpivoted to `[Type, Year, Month, CategorySegment, Value]`.
+### `Budget Forecast`  (Budget/VanArsdel_Budget_Forecast.xlsx, sheet `Sheet1`, unpivoted)
+| Model column | Source | Type | Hidden | Description |
+|---|---|---|---|---|
+| Type | Type | string | no | Budget or Forecast |
+| Year | Year | int64 | no | Calendar year |
+| Month | Month | string | no | Month name |
+| Category Segment | Unpivoted column name | string | no | Product category-segment bucket |
+| Budget Value | Unpivoted column value | double | yes | Planned amount |
 
-## Lookup/dimension entities
+## Recommended Measures  (all on `Key Measures`)
 
-### Campaign (from `VanArsdel_Actuals_Campaign.csv`)
-
-| Column | Type | Required | Description |
-|---|---|---|---|
-| CampaignID | integer | yes | Campaign key. |
-| TrafficChannel | text | yes | Channel label (for example `Organic Search`, `SEO`, `Banner`, `SEM`, `Email`, `SMO`, `Mail`). |
-| Device | text | yes | Device class (`Desktop`, `Mobile`, `Tablet`, `Paper`). |
-
-### DimProduct (from `VanArsdel_Dimensions.xlsx` -> sheet `DimProduct`)
-
-| Column | Type | Required | Description |
-|---|---|---|---|
-| ProductID | integer | yes | Product key. |
-| Product | text | yes | Product name. |
-| Category | text | yes | Product category. |
-| Segment | text | yes | Product segment. |
-| ManufacturerID | integer | yes | Manufacturer key. |
-| Manufacturer | text | yes | Manufacturer name. |
-| Unit Cost | decimal | yes | Unit cost value. |
-| Unit Price | decimal | yes | Unit selling price value. |
-
-### DimCustomer (from `VanArsdel_Dimensions.xlsx` -> sheet `DimCustomer`)
-
-| Column | Type | Required | Description |
-|---|---|---|---|
-| CustomerID | text/integer id | yes | Customer key. |
-| ZipCode | text | yes | Customer ZIP/postal code. |
-| Email Name | text | yes | Customer email/name descriptor field. |
-
-### DimDate (from `VanArsdel_Dimensions.xlsx` -> sheet `DimDate`)
-
-| Column | Type | Required | Description |
-|---|---|---|---|
-| Date | date (Excel serial date) | yes | Calendar date key. |
-| MonthNo | integer | yes | Month number (`1`-`12`). |
-| MonthName | text | yes | Month short name (for example `Jan`). |
-| MonthID | integer | yes | Compound month key (for example `202101`). |
-| Month | text | yes | Month label (for example `Jan-21`). |
-| Quarter | text | yes | Quarter label (`Q1`-`Q4`). |
-| Year | integer | yes | Calendar year. |
-
-### DimGeo (from `VanArsdel_Dimensions.xlsx` -> sheet `DimGeo`)
-
-| Column | Type | Required | Description |
-|---|---|---|---|
-| Zip | text | yes | ZIP/postal code key. |
-| City | text | yes | City text. |
-| State | text | yes | State code/name. |
-| Region | text | yes | Region grouping (for example `East`). |
-| District | text | yes | District grouping. |
-| Country | text | yes | Country name/code. |
+| Model column | Source | Type | Hidden | Description |
+|---|---|---|---|---|
+| Total Units | `SUM(Sales[Units])` | whole number | no | Total sold units |
+| Actual Revenue | `SUMX(Sales, Sales[Units] * RELATED(Product[Unit Price]))` | currency | no | Realized revenue |
+| Actual COGS | `SUMX(Sales, Sales[Units] * RELATED(Product[Unit Cost]))` | currency | no | Cost of goods sold |
+| Actual Profit | `[Actual Revenue] - [Actual COGS]` | currency | no | Gross profit |
+| Profit Margin % | `DIVIDE([Actual Profit], [Actual Revenue])` | percentage | no | Profitability ratio |
+| Budget Revenue | `CALCULATE(SUM('Budget Forecast'[Budget Value]), 'Budget Forecast'[Type] = "Budget")` | currency | no | Budget baseline |
+| Forecast Revenue | `CALCULATE(SUM('Budget Forecast'[Budget Value]), 'Budget Forecast'[Type] = "Forecast")` | currency | no | Forecast baseline |
+| Revenue Variance | `[Actual Revenue] - [Budget Revenue]` | currency | no | Actual minus budget |
+| Revenue Variance % | `DIVIDE([Revenue Variance], [Budget Revenue])` | percentage | no | Budget attainment gap |
+| Budget Achievement % | `DIVIDE([Actual Revenue], [Budget Revenue])` | percentage | no | Actual/budget ratio |
+| Actual Revenue PM | `CALCULATE([Actual Revenue], DATEADD('Date'[Date], -1, MONTH))` | currency | yes | Previous-month revenue helper |
+| Revenue MoM % | `DIVIDE([Actual Revenue] - [Actual Revenue PM], [Actual Revenue PM])` | percentage | no | Month-over-month growth |
+| Actual Revenue PY | `CALCULATE([Actual Revenue], DATEADD('Date'[Date], -1, YEAR))` | currency | yes | Previous-year revenue helper |
+| Revenue YoY % | `DIVIDE([Actual Revenue] - [Actual Revenue PY], [Actual Revenue PY])` | percentage | no | Year-over-year growth |
+| Actual Profit YTD | `TOTALYTD([Actual Profit], 'Date'[Date])` | currency | no | Year-to-date profit |
+| Revenue Share % | `DIVIDE([Actual Revenue], CALCULATE([Actual Revenue], ALL(Product)))` | percentage | no | Product contribution share |
 
 ## Relationship keys
 
 | From | To | Join key |
 |---|---|---|
-| Sales | DimProduct | ProductID |
-| Sales | DimCustomer | CustomerID |
-| Sales | Campaign | CampaignID |
-| Sales | DimDate | Date |
-| DimCustomer | DimGeo | ZipCode -> Zip |
+| Sales | Product | Product ID |
+| Sales | Customer | Customer ID |
+| Sales | Campaign | Campaign ID |
+| Sales | Date | Date |
+| Customer | Geo | Zip Code -> Zip |
 
 ## Data handling notes
 
-- Excel serial dates should be converted to calendar dates during ingestion.
-- Keep source column names unchanged to avoid breaking Power Query/TMDL mappings.
-- Trim trailing spaces on text fields such as traffic channel names before modeling.
+- Convert Excel serial dates to calendar dates in both Sales and DimDate.
+- Trim trailing spaces in `TrafficChannel` before grouping.
+- Keep source column names stable to avoid partition and measure regressions.

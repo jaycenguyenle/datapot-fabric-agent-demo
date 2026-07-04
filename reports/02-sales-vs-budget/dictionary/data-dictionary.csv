@@ -1,42 +1,59 @@
 object_type,source_file,sheet_or_scope,column_name,logical_table,data_type,required,description
-column,VanArsdel_Actuals.xlsx,Sales,ProductID,Sales,integer,yes,Product key joins DimProduct.ProductID
-column,VanArsdel_Actuals.xlsx,Sales,Date,Sales,date_excel_serial,yes,Transaction date joins DimDate.Date after conversion
-column,VanArsdel_Actuals.xlsx,Sales,CustomerID,Sales,text_or_integer_id,yes,Customer key joins DimCustomer.CustomerID
-column,VanArsdel_Actuals.xlsx,Sales,CampaignID,Sales,integer,yes,Campaign key joins Campaign.CampaignID
-column,VanArsdel_Actuals.xlsx,Sales,Units,Sales,integer,yes,Quantity sold
-column,VanArsdel_Actuals_Campaign.csv,file,CampaignID,Campaign,integer,yes,Campaign key
-column,VanArsdel_Actuals_Campaign.csv,file,TrafficChannel,Campaign,string,yes,Traffic channel label
-column,VanArsdel_Actuals_Campaign.csv,file,Device,Campaign,string,yes,Device class
-column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Type,BudgetForecast,string,yes,Planning scenario Budget or Forecast
-column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Year,BudgetForecast,integer,yes,Calendar year
-column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Month,BudgetForecast,string,yes,Month label
-column,VanArsdel_Budget_Forecast.xlsx,Sheet1,<Category>-<Segment>,BudgetForecast,decimal,yes,Dynamic amount columns by product category segment
-column,VanArsdel_Dimensions.xlsx,DimProduct,ProductID,DimProduct,integer,yes,Product key
-column,VanArsdel_Dimensions.xlsx,DimProduct,Product,DimProduct,string,yes,Product name
-column,VanArsdel_Dimensions.xlsx,DimProduct,Category,DimProduct,string,yes,Product category
-column,VanArsdel_Dimensions.xlsx,DimProduct,Segment,DimProduct,string,yes,Product segment
-column,VanArsdel_Dimensions.xlsx,DimProduct,ManufacturerID,DimProduct,integer,yes,Manufacturer key
-column,VanArsdel_Dimensions.xlsx,DimProduct,Manufacturer,DimProduct,string,yes,Manufacturer name
-column,VanArsdel_Dimensions.xlsx,DimProduct,Unit Cost,DimProduct,decimal,yes,Unit cost amount
-column,VanArsdel_Dimensions.xlsx,DimProduct,Unit Price,DimProduct,decimal,yes,Unit price amount
-column,VanArsdel_Dimensions.xlsx,DimCustomer,CustomerID,DimCustomer,text_or_integer_id,yes,Customer key
-column,VanArsdel_Dimensions.xlsx,DimCustomer,ZipCode,DimCustomer,string,yes,Zip or postal code
-column,VanArsdel_Dimensions.xlsx,DimCustomer,Email Name,DimCustomer,string,yes,Customer email name descriptor
-column,VanArsdel_Dimensions.xlsx,DimDate,Date,DimDate,date_excel_serial,yes,Calendar date key
-column,VanArsdel_Dimensions.xlsx,DimDate,MonthNo,DimDate,integer,yes,Month number
-column,VanArsdel_Dimensions.xlsx,DimDate,MonthName,DimDate,string,yes,Month short name
-column,VanArsdel_Dimensions.xlsx,DimDate,MonthID,DimDate,integer,yes,Compound month key like YYYYMM
-column,VanArsdel_Dimensions.xlsx,DimDate,Month,DimDate,string,yes,Month label like Jan-21
-column,VanArsdel_Dimensions.xlsx,DimDate,Quarter,DimDate,string,yes,Quarter label
-column,VanArsdel_Dimensions.xlsx,DimDate,Year,DimDate,integer,yes,Calendar year
-column,VanArsdel_Dimensions.xlsx,DimGeo,Zip,DimGeo,string,yes,Zip or postal code key
-column,VanArsdel_Dimensions.xlsx,DimGeo,City,DimGeo,string,yes,City
-column,VanArsdel_Dimensions.xlsx,DimGeo,State,DimGeo,string,yes,State
-column,VanArsdel_Dimensions.xlsx,DimGeo,Region,DimGeo,string,yes,Region
-column,VanArsdel_Dimensions.xlsx,DimGeo,District,DimGeo,string,yes,District
-column,VanArsdel_Dimensions.xlsx,DimGeo,Country,DimGeo,string,yes,Country
-relationship,model,joins,Sales.ProductID -> DimProduct.ProductID,Model,join_key,yes,Product relationship
-relationship,model,joins,Sales.CustomerID -> DimCustomer.CustomerID,Model,join_key,yes,Customer relationship
-relationship,model,joins,Sales.CampaignID -> Campaign.CampaignID,Model,join_key,yes,Campaign relationship
-relationship,model,joins,Sales.Date -> DimDate.Date,Model,join_key,yes,Date relationship
-relationship,model,joins,DimCustomer.ZipCode -> DimGeo.Zip,Model,join_key,yes,Geo relationship
+column,VanArsdel_Dimensions.xlsx,DimDate,Date,Date,dateTime,yes,Calendar date converted from Excel serial
+column,VanArsdel_Dimensions.xlsx,DimDate,Year,Date,int64,yes,Calendar year
+column,VanArsdel_Dimensions.xlsx,DimDate,Quarter,Date,string,yes,Q1-Q4
+column,VanArsdel_Dimensions.xlsx,DimDate,MonthNo,Date,int64,yes,Month number sort key
+column,VanArsdel_Dimensions.xlsx,DimDate,MonthName,Date,string,yes,Jan-Dec
+column,VanArsdel_Dimensions.xlsx,DimDate,MonthID,Date,int64,yes,YYYYMM key
+column,VanArsdel_Dimensions.xlsx,DimDate,Month,Date,string,yes,Month label like Jan-21
+column,VanArsdel_Dimensions.xlsx,DimProduct,ProductID,Product,int64,yes,Product key
+column,VanArsdel_Dimensions.xlsx,DimProduct,Product,Product,string,yes,Product display name
+column,VanArsdel_Dimensions.xlsx,DimProduct,Category,Product,string,yes,Product category
+column,VanArsdel_Dimensions.xlsx,DimProduct,Segment,Product,string,yes,Product segment
+column,VanArsdel_Dimensions.xlsx,DimProduct,ManufacturerID,Product,int64,yes,Manufacturer key
+column,VanArsdel_Dimensions.xlsx,DimProduct,Manufacturer,Product,string,yes,Manufacturer name
+column,VanArsdel_Dimensions.xlsx,DimProduct,Unit Cost,Product,double,yes,Cost per unit
+column,VanArsdel_Dimensions.xlsx,DimProduct,Unit Price,Product,double,yes,Selling price per unit
+column,VanArsdel_Dimensions.xlsx,DimCustomer,CustomerID,Customer,string,yes,Customer key
+column,VanArsdel_Dimensions.xlsx,DimCustomer,ZipCode,Customer,string,yes,ZIP/postal code
+column,VanArsdel_Dimensions.xlsx,DimCustomer,Email Name,Customer,string,yes,Customer email/name descriptor
+column,VanArsdel_Dimensions.xlsx,DimGeo,Zip,Geo,string,yes,ZIP/postal key
+column,VanArsdel_Dimensions.xlsx,DimGeo,City,Geo,string,yes,City
+column,VanArsdel_Dimensions.xlsx,DimGeo,State,Geo,string,yes,State
+column,VanArsdel_Dimensions.xlsx,DimGeo,Region,Geo,string,yes,Region
+column,VanArsdel_Dimensions.xlsx,DimGeo,District,Geo,string,yes,District
+column,VanArsdel_Dimensions.xlsx,DimGeo,Country,Geo,string,yes,Country
+column,VanArsdel_Actuals_Campaign.csv,file,CampaignID,Campaign,int64,yes,Campaign key
+column,VanArsdel_Actuals_Campaign.csv,file,TrafficChannel,Campaign,string,yes,Traffic channel
+column,VanArsdel_Actuals_Campaign.csv,file,Device,Campaign,string,yes,Device
+column,VanArsdel_Actuals.xlsx,Sales,ProductID,Sales,int64,yes,Relates to Product
+column,VanArsdel_Actuals.xlsx,Sales,Date,Sales,dateTime,yes,Relates to Date
+column,VanArsdel_Actuals.xlsx,Sales,CustomerID,Sales,string,yes,Relates to Customer
+column,VanArsdel_Actuals.xlsx,Sales,CampaignID,Sales,int64,yes,Relates to Campaign
+column,VanArsdel_Actuals.xlsx,Sales,Units,Sales,int64,yes,Quantity sold
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Type,Budget Forecast,string,yes,Budget or Forecast
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Year,Budget Forecast,int64,yes,Calendar year
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Month,Budget Forecast,string,yes,Month name
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Category Segment,Budget Forecast,string,yes,Unpivoted category-segment bucket
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Budget Value,Budget Forecast,double,yes,Planned amount
+measure,model,Key Measures,Total Units,Key Measures,whole number,yes,SUM(Sales[Units])
+measure,model,Key Measures,Actual Revenue,Key Measures,currency,yes,SUMX(Sales, Sales[Units] * RELATED(Product[Unit Price]))
+measure,model,Key Measures,Actual COGS,Key Measures,currency,yes,SUMX(Sales, Sales[Units] * RELATED(Product[Unit Cost]))
+measure,model,Key Measures,Actual Profit,Key Measures,currency,yes,[Actual Revenue] - [Actual COGS]
+measure,model,Key Measures,Profit Margin %,Key Measures,percentage,yes,DIVIDE([Actual Profit], [Actual Revenue])
+measure,model,Key Measures,Budget Revenue,Key Measures,currency,yes,CALCULATE(SUM('Budget Forecast'[Budget Value]), 'Budget Forecast'[Type] = "Budget")
+measure,model,Key Measures,Forecast Revenue,Key Measures,currency,yes,CALCULATE(SUM('Budget Forecast'[Budget Value]), 'Budget Forecast'[Type] = "Forecast")
+measure,model,Key Measures,Revenue Variance,Key Measures,currency,yes,[Actual Revenue] - [Budget Revenue]
+measure,model,Key Measures,Revenue Variance %,Key Measures,percentage,yes,DIVIDE([Revenue Variance], [Budget Revenue])
+measure,model,Key Measures,Budget Achievement %,Key Measures,percentage,yes,DIVIDE([Actual Revenue], [Budget Revenue])
+measure,model,Key Measures,Actual Revenue PM,Key Measures,currency,yes,CALCULATE([Actual Revenue], DATEADD('Date'[Date], -1, MONTH))
+measure,model,Key Measures,Revenue MoM %,Key Measures,percentage,yes,DIVIDE([Actual Revenue] - [Actual Revenue PM], [Actual Revenue PM])
+measure,model,Key Measures,Actual Revenue PY,Key Measures,currency,yes,CALCULATE([Actual Revenue], DATEADD('Date'[Date], -1, YEAR))
+measure,model,Key Measures,Revenue YoY %,Key Measures,percentage,yes,DIVIDE([Actual Revenue] - [Actual Revenue PY], [Actual Revenue PY])
+measure,model,Key Measures,Actual Profit YTD,Key Measures,currency,yes,TOTALYTD([Actual Profit], 'Date'[Date])
+measure,model,Key Measures,Revenue Share %,Key Measures,percentage,yes,DIVIDE([Actual Revenue], CALCULATE([Actual Revenue], ALL(Product)))
+relationship,model,joins,Sales -> Product,Model,join_key,yes,Sales[Product ID] -> Product[Product ID]
+relationship,model,joins,Sales -> Customer,Model,join_key,yes,Sales[Customer ID] -> Customer[Customer ID]
+relationship,model,joins,Sales -> Campaign,Model,join_key,yes,Sales[Campaign ID] -> Campaign[Campaign ID]
+relationship,model,joins,Sales -> Date,Model,join_key,yes,Sales[Date] -> Date[Date]
+relationship,model,joins,Customer -> Geo,Model,join_key,yes,Customer[Zip Code] -> Geo[Zip]
