@@ -1,51 +1,51 @@
-# Report spec — Branch & Channel Performance
+# Report spec — Sales vs Budget Distribution
 
 ## Purpose & audience
-- **Audience:** retail-banking COO / channel & branch operations leads / branch managers.
-- **Decisions supported:** where to shift volume to digital, which branches/channels lag on service
-  and NPS, how branches track to monthly targets.
+- **Audience:** Chief Commercial Officer (CCO), Regional Sales Managers, Marketing Directors.
+- **Decisions supported:** Objective: To monitor geographical performance, evaluate actual sales against allocated budget distributions across product categories and seasons, identify true profitability, and optimise future marketing campaign allocations.
 - **Refresh:** monthly (drop new monthly files into `dataset/raw/…`; folder-combine picks them up).
 
 ## Key questions
-1. How many transactions / how much value flow through each channel and branch, and how is it trending?
-2. What share of activity is digital, and is digital adoption growing?
-3. Which branches/regions have the best and worst NPS and service times?
-4. How do branches track against their monthly revenue targets?
+1. How many units are sold and how much revenue/profit is generated across different regions, states, and districts each month, and what are the trends?
+2. How do actual sales revenue and volume track against the monthly unpivoted budget and forecast targets?
+3. Which product categories and segments drive the highest profit margins, and how does this change by season or region?
+4. Which marketing campaigns deliver the highest ROI and profitability across different geographies?
 
 ## KPIs
 | KPI | Measure | Notes |
 |-----|---------|-------|
-| Total Transactions | `[Total Transactions]` | headline volume |
-| Gross Transaction Value | `[Gross Transaction Value]` | inflow + outflow magnitude (VND) |
-| Digital Adoption % | `[Digital Adoption %]` | digital share of transactions |
-| NPS | `[NPS]` | by branch / region |
-| Fee Revenue | `[Fee Revenue]` | vs `Revenue Target` (context — see model-design open Q1) |
-| Avg Service Time (min) | `[Avg Service Time (min)]` | read per channel |
+| Total Units Sold | `[Total Units Actual]` | headline volume |
+| Actual Revenue | `[Revenue Actual]` | Units * Unit Price (USD) |
+| Total Budget | `[Total Budget Amount]` | target value after unpivoting category columns |
+| Actual Profits | `[Profit Actual]` | Revenue Actual - Cost Actual (using Unit Cost) |
+| Profit Margin Actual % | `[Profit Margin Actual %]` | [Profit Actual] / [Revenue Actual] |
+| Budget Achievement % | `[Budget Achievement %]` | actual revenue vs allocated monthly budget |
 
 ## Grain & dimensions
-- **Fact grain:** transaction-level (`Transactions`); survey-level (`NPS Surveys`); branch×month (`Branch Targets`).
-- **Slicers / dimensions:** Date (Year/Quarter/Month), Branch (Region → City → Branch), Channel,
-  Transaction Type, Customer Segment, Product Category.
+- **Fact grain:** transaction-level ('Sales'); monthly wide-format record ('Budget & Forecast').
+- **Slicers / dimensions:** Date (Year/Quarter/Month/Season), Geo (Region → State → District → City), Product (Category → Segment → Product), Campaign (TrafficChannel, Device).
 
 ## Pages
 
 ### Page 1 — Overview  *(built)*
-KPI cards: Total Transactions, Gross Transaction Value, NPS, Digital Adoption %.
-Trend: Transactions by Month (line). Breakdown: Transactions by Channel (column). Slicer: Year.
+- KPI cards: Total Units Actual, Revenue Actual, Profit Actual, Profit Margin Actual %, Budget Achievement %.
+- Trend: Actual Revenue vs Allocated Budget by Month (line & clustered column).
+- Break down: Revenue by Region (filled map or bar chart); Category-Segment breakdown matrix.
+- Slicer: Year.
 
-### Page 2 — Channel Performance  *(built)*
-- Digital vs Physical/Assisted transaction mix (100% stacked column by month).
-- Transactions & Gross Value by Channel (bar); Avg Service Time by Channel.
-- Channel × Transaction Category matrix. Fee Revenue by Channel.
+### Page 2 — Product & Seasonality Performance  *(built)*
+- Product breakdown: Revenue & Profit Margin % by Category and Segment (bar / scatter plot).
+- Seasonality mix: 100% stacked column chart showing product category share by Season (Spring, Summer, Autumn, Winter, derived from MonthNo).
+- Manufacturer Matrix: Row: Manufacturer → Category; Columns: Season; Values: [Revenue Actual], [Profit Margin Actual %].
 
-### Page 3 — Branch Scorecard  *(built)*
-- Matrix: branch rows × {Total Transactions, Gross Value, Digital Adoption %, NPS, Avg Service Time,
-  Fee Revenue, Revenue Target} with conditional formatting.
-- Top / bottom branches by NPS; map or bar by Region; NPS reason breakdown (`Primary Reason`).
+### Page 3 — Campaign Optimization & Geo Scorecard  *(built)*
+- Matrix: Region rows × {Revenue Actual, Profit Actual, Profit Margin Actual %, Total Budget Amount, Budget Achievement %, Campaign ROI %} with conditional formatting.
+- Campaign analysis: Bar chart showing Revenue & Profit by TrafficChannel; breakdown by Device type.
+- Top / Bottom Performers: Top 5 and Bottom 5 Districts by Budget Achievement % or Profit Margin.
 
 ## Filters
-- Report-level: Year (default latest), Region.
-- Page-level (P2): Channel Type. (P3): Branch Type, Segment.
+- Report-level: Year, Region.
+- Page-level (P2): Category-Segment. (P3): TrafficChannel, Device.
 
 ## Design notes
 - Theme `shared/themes/datapot-theme.json` (registered). Page 1280×720. Format via theme, not per-visual.
