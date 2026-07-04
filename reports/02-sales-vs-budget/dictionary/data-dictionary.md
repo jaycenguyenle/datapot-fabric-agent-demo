@@ -1,7 +1,4 @@
 # Data dictionary — Sales vs Budget (VANARSDEL)
-
-Lock-step with the semantic model in `../pbip/BranchChannelPerformance.SemanticModel`.
-Currency = **USD**.
 Hidden columns are not shown to report users (keys, raw fact fields). `★` = table key.
 
 ## Dimensions
@@ -46,7 +43,7 @@ Hidden columns are not shown to report users (keys, raw fact fields). `★` = ta
 | District | District | string | no | District |
 | Country | Country | string | no | Country |
 
-### `Campaign`  (VanArsdel_Actuals_Campaign.csv)
+### `Campaign`  (DimCampaign)
 | Model column | Source | Type | Hidden | Description |
 |---|---|---|---|---|
 | Campaign ID ★ | CampaignID | int64 | yes | Campaign key |
@@ -73,7 +70,7 @@ Hidden columns are not shown to report users (keys, raw fact fields). `★` = ta
 | Category Segment | Unpivoted column name | string | no | Product category-segment bucket |
 | Budget Value | Unpivoted column value | double | yes | Planned amount |
 
-## Recommended Measures  (all on `Key Measures`)
+## Measures  (all on `Key Measures`)
 
 | Model column | Source | Type | Hidden | Description |
 |---|---|---|---|---|
