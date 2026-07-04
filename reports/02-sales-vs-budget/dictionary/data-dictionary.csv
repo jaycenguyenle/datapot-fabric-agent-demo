@@ -1,87 +1,42 @@
-object_type,table,model_name,source_column,data_type,hidden,key,description_or_dax
-column,Date,Date,Date,dateTime,no,yes,Calendar date relationship key
-column,Date,Year,Year,int64,no,no,Calendar year
-column,Date,Quarter,Quarter,string,no,no,Q1-Q4
-column,Date,Month,Month,int64,yes,no,Month number sort key
-column,Date,Month Name,MonthName,string,no,no,Sorted by Month
-column,Date,Month Year,MonthYear,string,no,no,YYYY-MM chronological trend axis
-column,Date,Day Of Week,DayOfWeek,string,no,no,Weekday name
-column,Date,Is Weekend,IsWeekend,boolean,no,no,Weekend flag
-column,Branch,Branch ID,BranchID,string,yes,yes,B001-B050
-column,Branch,Branch Name,BranchName,string,no,no,Branch display name
-column,Branch,City,City,string,no,no,Trimmed
-column,Branch,District,District,string,no,no,District
-column,Branch,Region,Region,string,no,no,Bac/Trung/Nam
-column,Branch,Branch Type,BranchType,string,no,no,Digital/Hub/Spoke
-column,Branch,Open Date,OpenDate,dateTime,no,no,Opening date
-column,Branch,Manager,Manager,string,no,no,Branch manager
-column,Product,Product ID,ProductID,string,yes,yes,Product key
-column,Product,Product Name,ProductName,string,no,no,Product name
-column,Product,Product Category,ProductCategory,string,no,no,Card/Deposit/Loan/Wealth
-column,Product,Product Sub Category,ProductSubCategory,string,no,no,Sub category
-column,Product,Base Rate,BaseRate,double,no,no,Base rate percent
-column,Customer,Customer ID,CustomerID,string,yes,yes,Customer key
-column,Customer,Full Name,FullName,string,no,no,Customer name
-column,Customer,Gender,Gender,string,no,no,Nam/Nu
-column,Customer,Date Of Birth,DateOfBirth,dateTime,yes,no,DOB
-column,Customer,Age,Age,int64,no,no,Age
-column,Customer,Occupation,Occupation,string,no,no,Occupation
-column,Customer,City,City,string,no,no,Customer city
-column,Customer,Home Branch ID,HomeBranchID,string,yes,no,Home branch (not related to Branch)
-column,Customer,Segment,Segment,string,no,no,Mass/Affluent/Priority/Private
-column,Customer,Join Date,JoinDate,dateTime,no,no,Join date
-column,Customer,KYC Status,KYCStatus,string,no,no,KYC status
-column,Channel,Channel ID,ChannelID,string,yes,yes,CH1-CH6
-column,Channel,Channel Name,ChannelName,string,no,no,Channel display name
-column,Channel,Channel Type,ChannelType,string,no,no,Derived Digital/Self-Service/Assisted/Branch
-column,Channel,Is Digital,IsDigital,boolean,no,no,Derived TRUE for Internet/Mobile
-column,Transaction Type,Transaction Type ID,TransactionTypeID,string,yes,yes,T01-T08
-column,Transaction Type,Transaction Type Name,TransactionTypeName,string,no,no,Type name
-column,Transaction Type,Transaction Category,TransactionCategory,string,no,no,Derived Cash/Transfer/Payment/Income/Loan Repayment
-column,Transactions,Transaction ID,TransactionID,string,yes,no,Transaction key
-column,Transactions,Date,Date,dateTime,yes,no,Relates to Date
-column,Transactions,Customer ID,CustomerID,string,yes,no,Relates to Customer
-column,Transactions,Product ID,ProductID,string,yes,no,Relates to Product
-column,Transactions,Branch ID,BranchID,string,yes,no,Relates to Branch
-column,Transactions,Channel ID,ChannelID,string,yes,no,Relates to Channel
-column,Transactions,Channel Name,ChannelName,string,yes,no,Denormalized
-column,Transactions,Transaction Type ID,TransactionTypeID,string,yes,no,Relates to Transaction Type
-column,Transactions,Transaction Type Name,TransactionTypeName,string,yes,no,Denormalized
-column,Transactions,Direction,Direction,string,no,no,Credit/Debit
-column,Transactions,Amount (VND),Amount_VND,int64,yes,no,Signed amount
-column,Transactions,Fee (VND),Fee_VND,int64,yes,no,Fee charged
-column,Transactions,Service Time (min),ServiceTimeMinutes,double,yes,no,May be blank
-column,NPS Surveys,Survey ID,SurveyID,string,yes,no,Survey key
-column,NPS Surveys,Survey Date,SurveyDate,dateTime,yes,no,Relates to Date
-column,NPS Surveys,Customer ID,CustomerID,string,yes,no,Relates to Customer
-column,NPS Surveys,Branch ID,BranchID,string,yes,no,Relates to Branch
-column,NPS Surveys,Score,Score,int64,yes,no,0-10
-column,NPS Surveys,NPS Category,NPSCategory,string,no,no,Promoter/Passive/Detractor
-column,NPS Surveys,Primary Reason ID,PrimaryReasonID,string,yes,no,R01-R08
-column,NPS Surveys,Primary Reason,PrimaryReason,string,no,no,Reason text
-column,Branch Targets,Branch ID,BranchID,string,yes,no,Relates to Branch
-column,Branch Targets,Target Type,TargetType,string,no,no,Total Revenue (VND)/CASA Balance (VND)
-column,Branch Targets,Month,Month,dateTime,yes,no,Relates to Date 1st of month
-column,Branch Targets,Target Value,TargetValue,double,yes,no,Monthly target amount
-measure,Key Measures,Total Transactions,,,no,,COUNTROWS(Transactions)
-measure,Key Measures,Active Customers,,,no,,DISTINCTCOUNT(Transactions[Customer ID])
-measure,Key Measures,Total Inflow,,,no,,CALCULATE(SUM(Transactions[Amount (VND)]) Direction=Credit)
-measure,Key Measures,Total Outflow,,,no,,CALCULATE(-1*SUM(Transactions[Amount (VND)]) Direction=Debit)
-measure,Key Measures,Net Flow,,,no,,[Total Inflow]-[Total Outflow]
-measure,Key Measures,Gross Transaction Value,,,no,,[Total Inflow]+[Total Outflow]
-measure,Key Measures,Avg Transaction Size,,,no,,DIVIDE([Gross Transaction Value] [Total Transactions])
-measure,Key Measures,Fee Revenue,,,no,,SUM(Transactions[Fee (VND)])
-measure,Key Measures,Revenue Target,,,no,,CALCULATE(SUM(Branch Targets[Target Value]) Type=Total Revenue)
-measure,Key Measures,CASA Balance Target,,,no,,CALCULATE(SUM(Branch Targets[Target Value]) Type=CASA Balance)
-measure,Key Measures,Avg Service Time (min),,,no,,AVERAGE(Transactions[Service Time (min)])
-measure,Key Measures,Survey Responses,,,no,,COUNTROWS(NPS Surveys)
-measure,Key Measures,Promoters,,,yes,,CALCULATE(COUNTROWS(NPS Surveys) Category=Promoter)
-measure,Key Measures,Detractors,,,yes,,CALCULATE(COUNTROWS(NPS Surveys) Category=Detractor)
-measure,Key Measures,NPS,,,no,,DIVIDE([Promoters]-[Detractors] [Survey Responses])*100
-measure,Key Measures,Avg NPS Score,,,no,,AVERAGE(NPS Surveys[Score])
-measure,Key Measures,Digital Transactions,,,no,,CALCULATE([Total Transactions] Channel[Is Digital]=TRUE)
-measure,Key Measures,Digital Adoption %,,,no,,DIVIDE([Digital Transactions] [Total Transactions])
-measure,Key Measures,Transactions PM,,,no,,CALCULATE([Total Transactions] DATEADD(Date[Date] -1 MONTH))
-measure,Key Measures,Transactions MoM %,,,no,,DIVIDE([Total Transactions]-[Transactions PM] [Transactions PM])
-measure,Key Measures,Transactions YTD,,,no,,TOTALYTD([Total Transactions] Date[Date])
-measure,Key Measures,Fee Revenue YTD,,,no,,TOTALYTD([Fee Revenue] Date[Date])
+object_type,source_file,sheet_or_scope,column_name,logical_table,data_type,required,description
+column,VanArsdel_Actuals.xlsx,Sales,ProductID,Sales,integer,yes,Product key joins DimProduct.ProductID
+column,VanArsdel_Actuals.xlsx,Sales,Date,Sales,date_excel_serial,yes,Transaction date joins DimDate.Date after conversion
+column,VanArsdel_Actuals.xlsx,Sales,CustomerID,Sales,text_or_integer_id,yes,Customer key joins DimCustomer.CustomerID
+column,VanArsdel_Actuals.xlsx,Sales,CampaignID,Sales,integer,yes,Campaign key joins Campaign.CampaignID
+column,VanArsdel_Actuals.xlsx,Sales,Units,Sales,integer,yes,Quantity sold
+column,VanArsdel_Actuals_Campaign.csv,file,CampaignID,Campaign,integer,yes,Campaign key
+column,VanArsdel_Actuals_Campaign.csv,file,TrafficChannel,Campaign,string,yes,Traffic channel label
+column,VanArsdel_Actuals_Campaign.csv,file,Device,Campaign,string,yes,Device class
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Type,BudgetForecast,string,yes,Planning scenario Budget or Forecast
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Year,BudgetForecast,integer,yes,Calendar year
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,Month,BudgetForecast,string,yes,Month label
+column,VanArsdel_Budget_Forecast.xlsx,Sheet1,<Category>-<Segment>,BudgetForecast,decimal,yes,Dynamic amount columns by product category segment
+column,VanArsdel_Dimensions.xlsx,DimProduct,ProductID,DimProduct,integer,yes,Product key
+column,VanArsdel_Dimensions.xlsx,DimProduct,Product,DimProduct,string,yes,Product name
+column,VanArsdel_Dimensions.xlsx,DimProduct,Category,DimProduct,string,yes,Product category
+column,VanArsdel_Dimensions.xlsx,DimProduct,Segment,DimProduct,string,yes,Product segment
+column,VanArsdel_Dimensions.xlsx,DimProduct,ManufacturerID,DimProduct,integer,yes,Manufacturer key
+column,VanArsdel_Dimensions.xlsx,DimProduct,Manufacturer,DimProduct,string,yes,Manufacturer name
+column,VanArsdel_Dimensions.xlsx,DimProduct,Unit Cost,DimProduct,decimal,yes,Unit cost amount
+column,VanArsdel_Dimensions.xlsx,DimProduct,Unit Price,DimProduct,decimal,yes,Unit price amount
+column,VanArsdel_Dimensions.xlsx,DimCustomer,CustomerID,DimCustomer,text_or_integer_id,yes,Customer key
+column,VanArsdel_Dimensions.xlsx,DimCustomer,ZipCode,DimCustomer,string,yes,Zip or postal code
+column,VanArsdel_Dimensions.xlsx,DimCustomer,Email Name,DimCustomer,string,yes,Customer email name descriptor
+column,VanArsdel_Dimensions.xlsx,DimDate,Date,DimDate,date_excel_serial,yes,Calendar date key
+column,VanArsdel_Dimensions.xlsx,DimDate,MonthNo,DimDate,integer,yes,Month number
+column,VanArsdel_Dimensions.xlsx,DimDate,MonthName,DimDate,string,yes,Month short name
+column,VanArsdel_Dimensions.xlsx,DimDate,MonthID,DimDate,integer,yes,Compound month key like YYYYMM
+column,VanArsdel_Dimensions.xlsx,DimDate,Month,DimDate,string,yes,Month label like Jan-21
+column,VanArsdel_Dimensions.xlsx,DimDate,Quarter,DimDate,string,yes,Quarter label
+column,VanArsdel_Dimensions.xlsx,DimDate,Year,DimDate,integer,yes,Calendar year
+column,VanArsdel_Dimensions.xlsx,DimGeo,Zip,DimGeo,string,yes,Zip or postal code key
+column,VanArsdel_Dimensions.xlsx,DimGeo,City,DimGeo,string,yes,City
+column,VanArsdel_Dimensions.xlsx,DimGeo,State,DimGeo,string,yes,State
+column,VanArsdel_Dimensions.xlsx,DimGeo,Region,DimGeo,string,yes,Region
+column,VanArsdel_Dimensions.xlsx,DimGeo,District,DimGeo,string,yes,District
+column,VanArsdel_Dimensions.xlsx,DimGeo,Country,DimGeo,string,yes,Country
+relationship,model,joins,Sales.ProductID -> DimProduct.ProductID,Model,join_key,yes,Product relationship
+relationship,model,joins,Sales.CustomerID -> DimCustomer.CustomerID,Model,join_key,yes,Customer relationship
+relationship,model,joins,Sales.CampaignID -> Campaign.CampaignID,Model,join_key,yes,Campaign relationship
+relationship,model,joins,Sales.Date -> DimDate.Date,Model,join_key,yes,Date relationship
+relationship,model,joins,DimCustomer.ZipCode -> DimGeo.Zip,Model,join_key,yes,Geo relationship
