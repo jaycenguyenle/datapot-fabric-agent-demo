@@ -1,93 +1,51 @@
-# Dataset contract — Sales vs Budget (VANNAVARSDEL)
+# Dataset contract — Sales vs Budget Distribution
 
-This file defines what `dataset/raw/` must contain for report 02. It is the contract between the
-data producer and the semantic model. All Power Query partitions read files relative to the
-`DataFolder` parameter.
+What `dataset/raw/` must contain. This is the agreement between the data producer and the semantic
+model. The model's Power Query partitions read these files relative to the `DataFolder` parameter.
+The dataset is the **VANARSDEL** sample (historical actuals and budget forecasts, 2020-01 → 2021-12).
 
-Dataset name: **VANNAVARSDEL**
+> ✅ Status: data is present and the model is bound to it. See [docs/data-profile.md](../docs/data-profile.md).
 
-> Status: baseline data is present in `dataset/raw/`. Keep this contract updated whenever schema changes.
+## Files consumed by THIS report (#1)
 
-## Scope
-
-Primary business use case for this report:
-- Compare actual sales/performance against monthly budget targets.
-- Analyze gaps by branch, product, customer segment, and channel.
-
-## Required files consumed by this report
-
-### `Transactions/transactions_YYYY-MM.csv` -> fact `Transactions` (actuals)
-
-Naming rule:
-- One file per month, `YYYY-MM` format.
-
-Minimum required columns:
+### `Sales/VanArsdel_Actuals.xlsx`  → fact `Sales`
 
 | Column | Type | Notes |
 |--------|------|-------|
-| Date | date | transaction date |
-| BranchID | text | joins to `Branch` |
-| ProductID | integer | joins to `Product` |
-| CustomerID | integer | joins to `Customer` |
-| ChannelID | text | joins to `Channel` (derived if needed) |
-| TransactionTypeID | text | joins to `Transaction Type` (derived if needed) |
-| Amount_VND | integer | signed amount |
-| Fee_VND | integer | non-negative |
+| ProductID | integer | → DimProduct |
+| Date | date | transaction date → Date |
+| CustomerID | integer | → DimCustomer |
+| CampaignID | text | → DimCampaign |
+| Units | integer | Number of products sold |
 
-Optional columns (if available):
-`TransactionID`, `ChannelName`, `TransactionTypeName`, `Direction`, `ServiceTimeMinutes`.
+### `Campaign/VanArsdel_Actuals_Campaign.csv`  → fact `Campaign`
+CampaignID (int), TrafficChannel (text: Organic Search, SEO, Banner, SEM, Email, SMO, Mail), Device (text: Desktop, Mobile, Tablet, Paper).
 
-### `Targets/BranchTargets.xlsx` (sheet `MonthlyTargets`) -> fact `Branch Targets` (budget)
+### `Budget/VanArsdel_Budget_Forecast.xlsx`, sheet `1`  → fact `Budget & Forecast`
+Wide format: `Type, Year, Month` + one column per Product Category-Segment combination (Accessory-Accessory … Youth-Youth)
+`Type ∈ {Budget, Forecast}`. The model **unpivots** the product columns.
 
-Required shape:
-- Grain: Branch + TargetType + Month.
-- Source can be wide format, but model will unpivot month columns.
-
-Required columns before unpivot:
-
-| Column | Type | Notes |
-|--------|------|-------|
-| BranchID | text | joins to `Branch` |
-| BranchName | text | descriptive |
-| TargetType | text | example: `Total Revenue (VND)` |
-| `YYYY-MM` month columns | number | monthly budget values |
-
-### `Dimensions/BankDIAD_Dimensions.xlsx` -> dimensions
-
-Required sheets and keys:
-
+### `Dimensions/VanArsdel_Dimensions.xlsx`  → dimensions
 | Sheet | Model table | Key columns |
 |-------|-------------|-------------|
-| DimBranch | `Branch` | BranchID, BranchName, Region, BranchType |
-| DimProduct | `Product` | ProductID, ProductName, ProductCategory |
-| DimCustomer | `Customer` | CustomerID, Segment, HomeBranchID |
-| DimDate | `Date` | Date, Year, Month, MonthYear |
+| DimProduct | `Product` | ProductID, Product, Category, Segment, ManufacturerID, Manufacturer, Unit Cost, Unit Price |
+| DimCustomer | `Customer` | CustomerID, ZipCode, Email Name |
+| DimDate | `Date` | Date, MonthNo, MonthName, MonthID, Month, Quarter, Year |
+| DimGeo | `Geo` | Zip, City, State, Region, District, Country |
+`Manufacturer` and `Segment` dimensions are **derived** from distinct values in `Product`
+(no sheet exists for them).
+## Files NOT used by this report (reserved for future reports)
 
-Derived dimensions:
-- `Channel` and `Transaction Type` may be derived from distinct values in `Transactions`.
+| File | Reserved for |
+|------|--------------|
+| `Dimensions/Inventory.csv` | inventory dimension (future) |
+| `StoreSnapshots/snapshot_YYYY-MM.csv` | **Report #2 — Store & Retail Performance** (TrafficCount, OperationalCost) |
+| `CustomerLoyalty/loyalty_YYYY-MM.csv` | **Report #2/#3** — customer retention / loyalty tier 360 |
+| `MarketingSpend/spend_YYYY-MM.csv` | **Report #3 — Marketing ROI & Attribution** (AdWordsSpend, SocialMediaSpend, Status) |
 
-## Secondary file currently consumed by model
-
-### `NPSSurveys/nps_YYYY-MM.csv` -> fact `NPS Surveys`
-
-This file is used by the current semantic model but is secondary for Sales vs Budget analysis.
-Required columns:
-`SurveyID`, `SurveyDate`, `CustomerID`, `BranchID`, `Score`, `NPSCategory`, `PrimaryReasonID`, `PrimaryReason`.
-
-## Files present but out of current report scope
-
-| File | Purpose |
-|------|---------|
-| `Dimensions/Accounts.csv` | future account-level analysis |
-| `AccountSnapshots/snapshot_YYYY-MM.csv` | future balance trend analysis |
-| `CustomerProductMonth/cpm_YYYY-MM.csv` | future customer product-holding analysis |
-| `LoanOriginations/origination_YYYY-MM.csv` | future lending/origination analysis |
-
-## Data quality and refresh rules
-
-- Encoding: UTF-8.
-- Monthly partition files must follow the exact naming pattern.
-- Column names are case-sensitive for ingestion scripts; do not rename without model update.
-- Keys must be non-null where used for joins (`BranchID`, `ProductID`, `CustomerID`, `Date`).
-- Budget values should be non-negative unless explicitly defined otherwise.
-- On schema change: update this contract, `dictionary/data-dictionary.md`, and relevant `*.tmdl` partitions together.
+## Refresh rules
+- Add new monthly files into the matching folder using the same name pattern; the folder-combine
+  queries pick them up automatically — no model change needed.
+- Keep column names and order stable. If they change, update the matching `*.tmdl` partition and the
+  [data dictionary](../dictionary/data-dictionary.md).
+- Encoding must be **UTF-8** (Vietnamese text); the queries read with `Encoding = 65001`.
