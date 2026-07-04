@@ -32,8 +32,10 @@ Wide format: `Type, Year, Month` + one column per Product Category-Segment combi
 | DimCustomer | `Customer` | CustomerID, ZipCode, Email Name |
 | DimDate | `Date` | Date, MonthNo, MonthName, MonthID, Month, Quarter, Year |
 | DimGeo | `Geo` | Zip, City, State, Region, District, Country |
+
 `Manufacturer` and `Segment` dimensions are **derived** from distinct values in `Product`
 (no sheet exists for them).
+
 ## Files NOT used by this report (reserved for future reports)
 
 | File | Reserved for |
